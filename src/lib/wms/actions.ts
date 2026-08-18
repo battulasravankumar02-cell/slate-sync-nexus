@@ -229,6 +229,7 @@ export function triggerStockOut(skuId: string) {
 
 export function inboundStock(skuId: string, units: number) {
   let bin = "";
+  let receivedPo = "";
   mutate((d) => {
     const sku = d.skus.find((s) => s.id === skuId || s.sku.toUpperCase() === skuId.toUpperCase());
     if (!sku) return;
@@ -237,11 +238,15 @@ export function inboundStock(skuId: string, units: number) {
     bin = sku.bin;
     d.pickPath = [sku.bin, ...d.pickPath.filter((b) => b !== sku.bin)].slice(0, 4);
     const po = d.pos.find((p) => p.sku === sku.sku && p.status === "issued");
-    if (po) po.status = "received";
+    if (po) {
+      po.status = "received";
+      receivedPo = po.id;
+    }
     log(d, "mobile", "info", `Inbound GRN posted: ${units} units of ${sku.sku} received into ${sku.bin}.`);
     log(d, "autonomous-ai", "ai", `Putaway slot ${sku.bin} confirmed optimal by slotting engine; 3D matrix highlighted.`);
     alert(d, "Inbound complete", `${units} units · ${sku.sku} → ${sku.bin}`, "emerald");
   });
+  if (receivedPo) pushPoStatus(receivedPo, "received");
   broadcastToast(`📥 INBOUND RECEIVED`, `${units} units putaway at ${bin}`, "emerald");
 }
 
