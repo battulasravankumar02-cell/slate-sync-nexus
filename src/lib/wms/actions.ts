@@ -139,6 +139,8 @@ export function placeOrder(skuId: string, priority: "standard" | "prime", qty = 
     },
     events,
   );
+  const created = readState().orders.find((o) => o.id === orderId);
+  if (created) pushOrder(created);
   const title = priority === "prime" ? `⚡ PRIME URGENT ORDER: #${orderId}` : `🔔 NEW ORDER RECEIVED: #${orderId}`;
   broadcastToast(title, priority === "prime" ? "Delhivery Enterprise auto-assigned · SLA < 2h armed" : "Auto-packed and queued for dispatch", priority === "prime" ? "cyan" : "emerald");
   return orderId;
