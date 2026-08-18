@@ -16,7 +16,7 @@ function InvoiceBill({ po }: { po: PurchaseOrder }) {
         <div className="text-right text-xs">
           <p className="font-semibold">{po.vendorName}</p>
           <p className="font-mono text-muted-foreground">GSTIN: {po.gstin}</p>
-          <p className="text-muted-foreground">{new Date(po.createdAt).toLocaleString("en-IN")}</p>
+          <p className="text-muted-foreground">{new Date(po.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</p>
         </div>
       </div>
       <table className="mt-3 w-full text-xs">
