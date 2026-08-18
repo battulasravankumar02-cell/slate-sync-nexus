@@ -14,7 +14,117 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      orders: {
+        Row: {
+          agent_id: string | null
+          city: string
+          courier: string | null
+          created_at: string
+          customer: string
+          id: string
+          item_name: string
+          order_ref: string
+          pod_signature: string | null
+          priority: string
+          qty: number
+          return_reason: string | null
+          sku: string
+          sla_deadline: string | null
+          status: string
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          agent_id?: string | null
+          city: string
+          courier?: string | null
+          created_at?: string
+          customer: string
+          id?: string
+          item_name: string
+          order_ref: string
+          pod_signature?: string | null
+          priority?: string
+          qty?: number
+          return_reason?: string | null
+          sku: string
+          sla_deadline?: string | null
+          status?: string
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string | null
+          city?: string
+          courier?: string | null
+          created_at?: string
+          customer?: string
+          id?: string
+          item_name?: string
+          order_ref?: string
+          pod_signature?: string | null
+          priority?: string
+          qty?: number
+          return_reason?: string | null
+          sku?: string
+          sla_deadline?: string | null
+          status?: string
+          total?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      po_bills: {
+        Row: {
+          created_at: string
+          gst: number
+          gstin: string | null
+          id: string
+          item_name: string
+          po_ref: string
+          sku: string
+          status: string
+          subtotal: number
+          total: number
+          unit_price: number
+          units: number
+          updated_at: string
+          vendor_name: string
+        }
+        Insert: {
+          created_at?: string
+          gst?: number
+          gstin?: string | null
+          id?: string
+          item_name: string
+          po_ref: string
+          sku: string
+          status?: string
+          subtotal?: number
+          total?: number
+          unit_price?: number
+          units?: number
+          updated_at?: string
+          vendor_name: string
+        }
+        Update: {
+          created_at?: string
+          gst?: number
+          gstin?: string | null
+          id?: string
+          item_name?: string
+          po_ref?: string
+          sku?: string
+          status?: string
+          subtotal?: number
+          total?: number
+          unit_price?: number
+          units?: number
+          updated_at?: string
+          vendor_name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
