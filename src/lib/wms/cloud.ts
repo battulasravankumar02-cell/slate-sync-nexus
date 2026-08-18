@@ -193,3 +193,8 @@ export function useCloudRealtime(onRemoteOrder?: (row: OrderRow, isNew: boolean)
     };
   }, [onRemoteOrder]);
 }
+
+export function pushPoStatus(poRef: string, status: PurchaseOrder["status"]) {
+  if (!isBrowser()) return;
+  void supabase.from("po_bills").update({ status }).eq("po_ref", poRef);
+}
