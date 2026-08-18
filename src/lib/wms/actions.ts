@@ -221,6 +221,8 @@ export function triggerStockOut(skuId: string) {
     log(d, "autonomous-ai", "ai", `Zero-stock detected → vendor ${vendor.name} selected (${vendor.leadTimeHrs}h lead, ${vendor.rating}★) → ${poId} auto-generated for ${units} units, ${inr(subtotal + gst)} incl. GST.`);
     alert(d, `Stock out — ${sku.sku}`, `${poId} auto-issued to ${vendor.name} · ${inr(subtotal + gst)}`, "rose");
   });
+  const issued = readState().pos.find((p) => p.id === poId);
+  if (issued) pushPoBill(issued);
   broadcastToast(`❌ STOCK OUT DETECTED`, `${poId} auto-issued to ${vendorName}`, "rose");
   return poId;
 }
