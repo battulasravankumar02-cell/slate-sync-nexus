@@ -15,6 +15,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useWmsState, subscribeEvents } from "@/lib/wms/store";
+import { useCloudRealtime } from "@/lib/wms/cloud";
 import { unpairDevice } from "@/lib/wms/actions";
 import { OperationsTab } from "@/components/wms/OperationsTab";
 import { LogisticsTab } from "@/components/wms/LogisticsTab";
