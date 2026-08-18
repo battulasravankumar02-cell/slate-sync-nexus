@@ -120,5 +120,5 @@ export function timeAgo(at: number) {
 }
 
 export function clockTime(at: number) {
-  return new Date(at).toLocaleTimeString("en-IN", { hour12: false });
+  return new Date(at).toLocaleTimeString("en-IN", { hour12: false, timeZone: "Asia/Kolkata" });
 }

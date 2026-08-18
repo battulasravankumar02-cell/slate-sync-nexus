@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   Activity,
@@ -15,6 +15,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useWmsState, subscribeEvents } from "@/lib/wms/store";
+import { useCloudRealtime } from "@/lib/wms/cloud";
 import { unpairDevice } from "@/lib/wms/actions";
 import { OperationsTab } from "@/components/wms/OperationsTab";
 import { LogisticsTab } from "@/components/wms/LogisticsTab";
@@ -66,6 +67,20 @@ function CommandCenter() {
       fn(e.title, { description: e.detail, duration: 5200 });
     });
   }, []);
+
+  const onRemoteOrder = useCallback((row: { order_ref: string; status: string; priority: string }, isNew: boolean) => {
+    if (isNew) {
+      toast.success(`☁️ CLOUD SYNC: #${row.order_ref}`, {
+        description: `${row.priority === "prime" ? "Prime urgent" : "Standard"} order streamed from mobile terminal`,
+        duration: 5200,
+      });
+    } else {
+      toast.message(`☁️ ORDER UPDATED: #${row.order_ref}`, { description: `Status → ${row.status}`, duration: 4200 });
+    }
+  }, []);
+
+  useCloudRealtime(onRemoteOrder);
+
 
   const connected = state.session.connected && state.session.code;
 

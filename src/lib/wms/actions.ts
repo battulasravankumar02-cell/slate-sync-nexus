@@ -1,4 +1,5 @@
 import { mutate, readState } from "./store";
+import { pushOrder, pushOrderStatus, pushPoBill, pushPoStatus } from "./cloud";
 import type { BusEvent, LogEntry, Sku, SystemAlert, WmsState } from "./types";
 
 export const inr = (n: number) =>
@@ -138,6 +139,8 @@ export function placeOrder(skuId: string, priority: "standard" | "prime", qty = 
     },
     events,
   );
+  const created = readState().orders.find((o) => o.id === orderId);
+  if (created) pushOrder(created);
   const title = priority === "prime" ? `⚡ PRIME URGENT ORDER: #${orderId}` : `🔔 NEW ORDER RECEIVED: #${orderId}`;
   broadcastToast(title, priority === "prime" ? "Delhivery Enterprise auto-assigned · SLA < 2h armed" : "Auto-packed and queued for dispatch", priority === "prime" ? "cyan" : "emerald");
   return orderId;
@@ -158,6 +161,7 @@ export function requestReturn(orderId: string, reason: string) {
     log(d, "autonomous-ai", "ai", `Inventory ledger flagged for reverse logistics; RTO pickup scheduled with ${order.courier}.`);
     alert(d, `Return logged — ${order.id}`, `${item.name} · ${reason}`, "amber");
   });
+  pushOrderStatus(orderId, "returned", { return_reason: reason });
   broadcastToast(`↩️ RETURN REQUESTED: #${orderId}`, `Reason: ${reason} · ledger flagged`, "amber");
 }
 
@@ -171,6 +175,7 @@ export function confirmDelivery(orderId: string, signature: string) {
     log(d, "mobile", "info", `e-POD captured for ${order.id} — digital signature "${signature}" verified.`);
     alert(d, `Delivered — ${order.id}`, `e-POD signed by ${signature}.`, "emerald");
   });
+  pushOrderStatus(orderId, "delivered", { pod_signature: signature, sla_deadline: null });
   broadcastToast(`📦 DELIVERED: #${orderId}`, `e-POD signature captured · ${signature}`, "emerald");
 }
 
@@ -216,12 +221,15 @@ export function triggerStockOut(skuId: string) {
     log(d, "autonomous-ai", "ai", `Zero-stock detected → vendor ${vendor.name} selected (${vendor.leadTimeHrs}h lead, ${vendor.rating}★) → ${poId} auto-generated for ${units} units, ${inr(subtotal + gst)} incl. GST.`);
     alert(d, `Stock out — ${sku.sku}`, `${poId} auto-issued to ${vendor.name} · ${inr(subtotal + gst)}`, "rose");
   });
+  const issued = readState().pos.find((p) => p.id === poId);
+  if (issued) pushPoBill(issued);
   broadcastToast(`❌ STOCK OUT DETECTED`, `${poId} auto-issued to ${vendorName}`, "rose");
   return poId;
 }
 
 export function inboundStock(skuId: string, units: number) {
   let bin = "";
+  let receivedPo = "";
   mutate((d) => {
     const sku = d.skus.find((s) => s.id === skuId || s.sku.toUpperCase() === skuId.toUpperCase());
     if (!sku) return;
@@ -230,11 +238,15 @@ export function inboundStock(skuId: string, units: number) {
     bin = sku.bin;
     d.pickPath = [sku.bin, ...d.pickPath.filter((b) => b !== sku.bin)].slice(0, 4);
     const po = d.pos.find((p) => p.sku === sku.sku && p.status === "issued");
-    if (po) po.status = "received";
+    if (po) {
+      po.status = "received";
+      receivedPo = po.id;
+    }
     log(d, "mobile", "info", `Inbound GRN posted: ${units} units of ${sku.sku} received into ${sku.bin}.`);
     log(d, "autonomous-ai", "ai", `Putaway slot ${sku.bin} confirmed optimal by slotting engine; 3D matrix highlighted.`);
     alert(d, "Inbound complete", `${units} units · ${sku.sku} → ${sku.bin}`, "emerald");
   });
+  if (receivedPo) pushPoStatus(receivedPo, "received");
   broadcastToast(`📥 INBOUND RECEIVED`, `${units} units putaway at ${bin}`, "emerald");
 }
 

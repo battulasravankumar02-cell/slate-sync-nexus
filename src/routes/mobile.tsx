@@ -15,6 +15,7 @@ import {
   Zap,
 } from "lucide-react";
 import { subscribeEvents, useWmsState } from "@/lib/wms/store";
+import { useCloudRealtime } from "@/lib/wms/cloud";
 import {
   confirmDelivery,
   ensureSessionCode,
@@ -91,6 +92,8 @@ function MobileTerminal() {
   const [signature, setSignature] = useState("");
   const [inboundSku, setInboundSku] = useState("HX-LAP-GMX-002");
   const [inboundUnits, setInboundUnits] = useState(60);
+
+  useCloudRealtime();
 
   useEffect(() => {
     ensureSessionCode();
