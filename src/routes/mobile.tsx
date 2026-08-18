@@ -15,6 +15,7 @@ import {
   Zap,
 } from "lucide-react";
 import { subscribeEvents, useWmsState } from "@/lib/wms/store";
+import { useCloudRealtime } from "@/lib/wms/cloud";
 import {
   confirmDelivery,
   ensureSessionCode,
