@@ -175,6 +175,7 @@ export function confirmDelivery(orderId: string, signature: string) {
     log(d, "mobile", "info", `e-POD captured for ${order.id} — digital signature "${signature}" verified.`);
     alert(d, `Delivered — ${order.id}`, `e-POD signed by ${signature}.`, "emerald");
   });
+  pushOrderStatus(orderId, "delivered", { pod_signature: signature, sla_deadline: null });
   broadcastToast(`📦 DELIVERED: #${orderId}`, `e-POD signature captured · ${signature}`, "emerald");
 }
 
