@@ -68,6 +68,20 @@ function CommandCenter() {
     });
   }, []);
 
+  const onRemoteOrder = useCallback((row: { order_ref: string; status: string; priority: string }, isNew: boolean) => {
+    if (isNew) {
+      toast.success(`☁️ CLOUD SYNC: #${row.order_ref}`, {
+        description: `${row.priority === "prime" ? "Prime urgent" : "Standard"} order streamed from mobile terminal`,
+        duration: 5200,
+      });
+    } else {
+      toast.message(`☁️ ORDER UPDATED: #${row.order_ref}`, { description: `Status → ${row.status}`, duration: 4200 });
+    }
+  }, []);
+
+  useCloudRealtime(onRemoteOrder);
+
+
   const connected = state.session.connected && state.session.code;
 
   return (
