@@ -92,6 +92,8 @@ function MobileTerminal() {
   const [inboundSku, setInboundSku] = useState("HX-LAP-GMX-002");
   const [inboundUnits, setInboundUnits] = useState(60);
 
+  useCloudRealtime();
+
   useEffect(() => {
     ensureSessionCode();
   }, []);
