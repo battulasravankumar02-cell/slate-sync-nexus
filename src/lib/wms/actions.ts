@@ -161,6 +161,7 @@ export function requestReturn(orderId: string, reason: string) {
     log(d, "autonomous-ai", "ai", `Inventory ledger flagged for reverse logistics; RTO pickup scheduled with ${order.courier}.`);
     alert(d, `Return logged — ${order.id}`, `${item.name} · ${reason}`, "amber");
   });
+  pushOrderStatus(orderId, "returned", { return_reason: reason });
   broadcastToast(`↩️ RETURN REQUESTED: #${orderId}`, `Reason: ${reason} · ledger flagged`, "amber");
 }
 
